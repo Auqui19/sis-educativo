@@ -1,13 +1,10 @@
-import { HTMLAttributes, useState } from 'react'
+import { useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate, useSearch } from '@tanstack/react-router'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
-import { authService } from '@/services/auth'
+import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/authStore'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,51 +17,62 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 
-type UserAuthFormProps = HTMLAttributes<HTMLFormElement>
-
 const formSchema = z.object({
-  documento_identidad: z
-    .string()
-    .min(1, { message: 'Por favor ingresa tu documento de identidad' }),
-  password: z.string().min(1, {
-    message: 'Por favor ingresa tu contraseña',
-  }),
+  documento: z.string().min(8, 'El documento debe tener al menos 8 caracteres'),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
 })
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
+type FormData = z.infer<typeof formSchema>
+
+const API_URL = import.meta.env.VITE_API_URL
+
+export function UserAuthForm() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const { redirect } = useSearch({ from: '/(auth)/sign-in' })
   const { setAccessToken, setUser } = useAuthStore((state) => state.auth)
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      documento_identidad: '',
+      documento: '',
       password: '',
     },
   })
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: FormData) {
     setIsLoading(true)
     try {
-      const response = await authService.login(data)
+      const response = await fetch(`${API_URL}/auth.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          documento_identidad: data.documento,
+          password: data.password,
+        }),
+      })
 
-      if (response.success) {
-        setAccessToken(response.token)
-        setUser(response.usuario)
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Credenciales inválidas')
+          return
+        }
+        throw new Error('Error en la solicitud')
+      }
 
+      const result = await response.json()
+
+      if (result.success) {
+        setAccessToken(result.token)
+        setUser(result.usuario)
         toast.success('¡Inicio de sesión exitoso!')
-
-        // Redirigir al usuario
-        const redirectTo = redirect || '/'
-        navigate({ to: redirectTo })
+        navigate({ to: '/' })
       } else {
-        toast.error('Credenciales inválidas')
+        toast.error(result.message || 'Credenciales inválidas')
       }
     } catch (error) {
-      console.error('Error al iniciar sesión:', error)
-      toast.error('Error al iniciar sesión. Por favor intenta de nuevo.')
+      toast.error('Error al iniciar sesión. Por favor intente nuevamente.')
     } finally {
       setIsLoading(false)
     }
@@ -72,19 +80,20 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn('grid gap-3', className)}
-        {...props}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
         <FormField
           control={form.control}
-          name='documento_identidad'
+          name='documento'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Documento de Identidad</FormLabel>
               <FormControl>
-                <Input placeholder='Ingresa tu DNI' {...field} />
+                <Input
+                  placeholder='Ingrese su documento'
+                  type='text'
+                  disabled={isLoading}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -94,44 +103,22 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           control={form.control}
           name='password'
           render={({ field }) => (
-            <FormItem className='relative'>
+            <FormItem>
               <FormLabel>Contraseña</FormLabel>
               <FormControl>
-                <PasswordInput placeholder='********' {...field} />
+                <PasswordInput
+                  placeholder='********'
+                  disabled={isLoading}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
-              <Link
-                to='/forgot-password'
-                className='text-muted-foreground absolute -top-0.5 right-0 text-sm font-medium hover:opacity-75'
-              >
-                ¿Olvidaste tu contraseña?
-              </Link>
             </FormItem>
           )}
         />
-        <Button className='mt-2' disabled={isLoading}>
-          {isLoading ? 'Iniciando sesión...' : 'Ingresar'}
+        <Button type='submit' className='w-full' disabled={isLoading}>
+          {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
         </Button>
-
-        <div className='relative my-2'>
-          <div className='absolute inset-0 flex items-center'>
-            <span className='w-full border-t' />
-          </div>
-          <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              O continúe con
-            </span>
-          </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconBrandGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconBrandFacebook className='h-4 w-4' /> Facebook
-          </Button>
-        </div>
       </form>
     </Form>
   )
