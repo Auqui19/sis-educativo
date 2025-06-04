@@ -2,39 +2,26 @@ import {
   IconLayoutDashboard,
   IconUsers,
 } from '@tabler/icons-react'
+import { type NavGroup } from '../types'
 
 export interface SidebarData {
   user: {
     name: string
     email: string
-    image: string
+    avatar: string
   }
   teams: {
     label: string
     value: string
   }[]
-  navGroups: {
-    title: string
-    items: {
-      title: string
-      url?: string
-      icon?: any
-      badge?: string
-      items?: {
-        title: string
-        url: string
-        icon?: any
-        badge?: string
-      }[]
-    }[]
-  }[]
+  navGroups: NavGroup[]
 }
 
 export const sidebarData: SidebarData = {
   user: {
     name: 'John Doe',
     email: 'john@example.com',
-    image: 'https://github.com/shadcn.png',
+    avatar: 'https://github.com/shadcn.png',
   },
   teams: [
     {

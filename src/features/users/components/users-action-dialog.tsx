@@ -24,7 +24,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { User, UserFormData } from '../types'
+import { User } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
