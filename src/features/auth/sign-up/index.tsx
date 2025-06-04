@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import AuthLayout from '../auth-layout'
-import { SignUpForm } from './components/sign-up-form'
 import { UserAuthForm } from './components/user-auth-form'
 
 export default function SignUp() {
@@ -17,17 +16,17 @@ export default function SignUp() {
       <Card className='gap-4'>
         <CardHeader>
           <CardTitle className='text-lg tracking-tight'>
-            Create an account
+            Crear una cuenta
           </CardTitle>
           <CardDescription>
-            Enter your email and password to create an account. <br />
-            Already have an account?{' '}
+            Ingresa tu correo y contraseña para crear una cuenta. <br />
+            ¿Ya tienes una cuenta?{' '}
             <Link
               to='/sign-in'
-              search={{ redirect: null }}
               className='hover:text-primary underline underline-offset-4'
+              search={{ redirect: null }}
             >
-              Sign In
+              Iniciar sesión
             </Link>
           </CardDescription>
         </CardHeader>
@@ -36,21 +35,21 @@ export default function SignUp() {
         </CardContent>
         <CardFooter>
           <p className='text-muted-foreground px-8 text-center text-sm'>
-            By creating an account, you agree to our{' '}
+            Al crear una cuenta, aceptas nuestros{' '}
             <Link
-              to='/terms'
-              search={{ redirect: null }}
+              to='/'
               className='hover:text-primary underline underline-offset-4'
+              search={{ redirect: null }}
             >
-              Terms of Service
+              Términos de Servicio
             </Link>{' '}
-            and{' '}
+            y{' '}
             <Link
-              to='/privacy'
-              search={{ redirect: null }}
+              to='/'
               className='hover:text-primary underline underline-offset-4'
+              search={{ redirect: null }}
             >
-              Privacy Policy
+              Política de Privacidad
             </Link>
             .
           </p>

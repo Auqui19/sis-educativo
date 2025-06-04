@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
-  //RowData,
   SortingState,
   VisibilityState,
   flexRender,
@@ -22,31 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { User } from '../types'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
-
-// Define la interfaz con los campos que vienen desde la API
-export interface User {
-  id: number
-  nombres: string
-  apellidos: string
-  documento_identidad: string
-  celular: string
-  correo: string
-  sexo: string
-  fecha_nacimiento: string
-  edad: number
-  estado_civil: string
-  grado_instruccion: string
-  direccion: string
-  distrito: string
-  provincia: string
-  departamento: string
-  rol_id: number
-  fecha_registro: string
-  estado: number
-  rol_nombre: string
-}
 
 interface DataTableProps {
   columns: ColumnDef<User>[]

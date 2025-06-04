@@ -1,36 +1,43 @@
-import React, { useState } from 'react'
-import { User } from '../components/users-columns'
+import { createContext, useContext, useState } from 'react'
+import { User } from '../types'
 
-export type UsersDialogType = 'add' | 'edit' | 'delete' | 'invite' | null
+type OpenState = 'add' | 'edit' | 'delete' | null
 
 interface UsersContextType {
-  open: UsersDialogType
-  setOpen: (type: UsersDialogType) => void
+  open: OpenState
+  setOpen: (state: OpenState) => void
   currentRow: User | null
   setCurrentRow: (user: User | null) => void
 }
 
-interface Props {
-  children: React.ReactNode
-}
+const UsersContext = createContext<UsersContextType | undefined>(undefined)
 
-const UsersContext = React.createContext<UsersContextType | null>(null)
-
-export default function UsersProvider({ children }: Props) {
-  const [open, setOpen] = useState<UsersDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<User | null>(null)
-
-  return (
-    <UsersContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
-      {children}
-    </UsersContext.Provider>
-  )
-}
-
-export const useUsers = () => {
-  const context = React.useContext(UsersContext)
-  if (!context) {
+export function useUsers() {
+  const context = useContext(UsersContext)
+  if (context === undefined) {
     throw new Error('useUsers must be used within a UsersProvider')
   }
   return context
+}
+
+export default function UsersProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState<OpenState>(null)
+  const [currentRow, setCurrentRow] = useState<User | null>(null)
+
+  return (
+    <UsersContext.Provider
+      value={{
+        open,
+        setOpen,
+        currentRow,
+        setCurrentRow,
+      }}
+    >
+      {children}
+    </UsersContext.Provider>
+  )
 }
