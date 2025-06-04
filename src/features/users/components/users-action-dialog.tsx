@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { userTypes } from '../data/data'
-import { User } from '../data/schema'
+import { User } from './users-columns'
 
 const formSchema = z
   .object({
@@ -87,13 +87,17 @@ const formSchema = z
   })
 type UserForm = z.infer<typeof formSchema>
 
-interface Props {
-  currentRow?: User
+interface UsersActionDialogProps {
   open: boolean
-  onOpenChange: (open: boolean) => void
+  onOpenChange: () => void
+  currentRow?: User
 }
 
-export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
+export function UsersActionDialog({
+  open,
+  onOpenChange,
+  currentRow,
+}: UsersActionDialogProps) {
   const isEdit = !!currentRow
   const form = useForm<UserForm>({
     resolver: zodResolver(formSchema),
@@ -120,25 +124,22 @@ export function UsersActionDialog({ currentRow, open, onOpenChange }: Props) {
   const onSubmit = (values: UserForm) => {
     form.reset()
     showSubmittedData(values)
-    onOpenChange(false)
+    onOpenChange()
   }
 
   const isPasswordTouched = !!form.formState.dirtyFields.password
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(state) => {
-        form.reset()
-        onOpenChange(state)
-      }}
-    >
-      <DialogContent className='sm:max-w-lg'>
-        <DialogHeader className='text-left'>
-          <DialogTitle>{isEdit ? 'Edit User' : 'Add New User'}</DialogTitle>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {currentRow ? 'Editar Usuario' : 'Nuevo Usuario'}
+          </DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Update the user here. ' : 'Create new user here. '}
-            Click save when you&apos;re done.
+            {currentRow
+              ? 'Modifica los datos del usuario'
+              : 'Ingresa los datos del nuevo usuario'}
           </DialogDescription>
         </DialogHeader>
         <div className='-mr-4 h-[26.25rem] w-full overflow-y-auto py-1 pr-4'>

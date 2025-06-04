@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card'
 import AuthLayout from '../auth-layout'
 import { SignUpForm } from './components/sign-up-form'
+import { UserAuthForm } from './components/user-auth-form'
 
 export default function SignUp() {
   return (
@@ -23,6 +24,7 @@ export default function SignUp() {
             Already have an account?{' '}
             <Link
               to='/sign-in'
+              search={{ redirect: null }}
               className='hover:text-primary underline underline-offset-4'
             >
               Sign In
@@ -30,24 +32,26 @@ export default function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <SignUpForm />
+          <UserAuthForm />
         </CardContent>
         <CardFooter>
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By creating an account, you agree to our{' '}
-            <a
-              href='/terms'
+            <Link
+              to='/terms'
+              search={{ redirect: null }}
               className='hover:text-primary underline underline-offset-4'
             >
               Terms of Service
-            </a>{' '}
+            </Link>{' '}
             and{' '}
-            <a
-              href='/privacy'
+            <Link
+              to='/privacy'
+              search={{ redirect: null }}
               className='hover:text-primary underline underline-offset-4'
             >
               Privacy Policy
-            </a>
+            </Link>
             .
           </p>
         </CardFooter>

@@ -39,7 +39,7 @@ function UserManagement() {
   }
 
   if (!isSignedIn) {
-    return <Unauthorized />
+    return <div>No autorizado</div>
   }
 
   // Parse user list
@@ -59,10 +59,12 @@ function UserManagement() {
           <Main>
             <div className='mb-2 flex flex-wrap items-center justify-between space-y-2'>
               <div>
-                <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
+                <h2 className='text-2xl font-bold tracking-tight'>
+                  Lista de Usuarios
+                </h2>
                 <div className='flex gap-1'>
                   <p className='text-muted-foreground'>
-                    Manage your users and their roles here.
+                    Administra los usuarios y sus roles aquí.
                   </p>
                   <LearnMore
                     open={opened}
@@ -70,9 +72,10 @@ function UserManagement() {
                     contentProps={{ side: 'right' }}
                   >
                     <p>
-                      This is the same as{' '}
+                      Esta es la misma vista que{' '}
                       <Link
                         to='/users'
+                        search={{ redirect: null }}
                         className='text-blue-500 underline decoration-dashed underline-offset-2'
                       >
                         '/users'
@@ -80,8 +83,9 @@ function UserManagement() {
                     </p>
 
                     <p className='mt-4'>
-                      You can sign out or manage/delete your account via the
-                      User Profile menu in the top-right corner of the page.
+                      Puedes cerrar sesión o gestionar/eliminar tu cuenta a
+                      través del menú de Perfil de Usuario en la esquina
+                      superior derecha de la página.
                       <IconArrowUpRight className='inline-block size-4' />
                     </p>
                   </LearnMore>
