@@ -16,8 +16,8 @@ export default function SignIn() {
         <CardHeader>
           <CardTitle className='text-lg tracking-tight'>Login</CardTitle>
           <CardDescription>
-            Enter your email and password below to <br />
-            log into your account
+            Ingrese su correo electrónico y contraseña <br />
+            inicia sesión en tu cuenta
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -25,19 +25,19 @@ export default function SignIn() {
         </CardContent>
         <CardFooter>
           <p className='text-muted-foreground px-8 text-center text-sm'>
-            By clicking login, you agree to our{' '}
+            Al hacer clic en iniciar sesión, aceptas nuestra{' '}
             <a
               href='/terms'
               className='hover:text-primary underline underline-offset-4'
             >
-              Terms of Service
+              Terminos de Servicio
             </a>{' '}
             and{' '}
             <a
               href='/privacy'
               className='hover:text-primary underline underline-offset-4'
             >
-              Privacy Policy
+              Privacidad y Política
             </a>
             .
           </p>

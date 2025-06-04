@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
-  RowData,
+  //RowData,
   SortingState,
   VisibilityState,
   flexRender,
@@ -22,27 +22,67 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { User } from '../data/schema'
 import { DataTablePagination } from './data-table-pagination'
 import { DataTableToolbar } from './data-table-toolbar'
 
-declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData extends RowData, TValue> {
-    className: string
-  }
+// Define la interfaz con los campos que vienen desde la API
+export interface User {
+  id: number
+  nombres: string
+  apellidos: string
+  documento_identidad: string
+  celular: string
+  correo: string
+  sexo: string
+  fecha_nacimiento: string
+  edad: number
+  estado_civil: string
+  grado_instruccion: string
+  direccion: string
+  distrito: string
+  provincia: string
+  departamento: string
+  rol_id: number
+  fecha_registro: string
+  estado: number
+  rol_nombre: string
 }
 
 interface DataTableProps {
   columns: ColumnDef<User>[]
-  data: User[]
 }
 
-export function UsersTable({ columns, data }: DataTableProps) {
+const API_URL = import.meta.env.VITE_API_URL
+
+export function UsersTable({ columns }: DataTableProps) {
+  const [data, setData] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!API_URL) {
+          throw new Error('La URL de la API no está configurada')
+        }
+        const response = await fetch(`${API_URL}/usuario.php`)
+        const json = await response.json()
+        setData(json)
+        setLoading(false)
+      } catch (err) {
+        console.error(err)
+        setError('Error al cargar los datos.')
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   const table = useReactTable({
     data,
@@ -66,6 +106,22 @@ export function UsersTable({ columns, data }: DataTableProps) {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        Cargando usuarios...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className='flex items-center justify-center p-8 text-red-500'>
+        {error}
+      </div>
+    )
+  }
+
   return (
     <div className='space-y-4'>
       <DataTableToolbar table={table} />
@@ -74,22 +130,20 @@ export function UsersTable({ columns, data }: DataTableProps) {
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className='group/row'>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={header.column.columnDef.meta?.className ?? ''}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className={header.column.columnDef.meta?.className ?? ''}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -120,7 +174,7 @@ export function UsersTable({ columns, data }: DataTableProps) {
                   colSpan={columns.length}
                   className='h-24 text-center'
                 >
-                  No results.
+                  No se encontraron resultados.
                 </TableCell>
               </TableRow>
             )}
